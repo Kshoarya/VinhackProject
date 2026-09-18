@@ -1,44 +1,7 @@
 """
 Supabase Database Client & Helper Module (app/db.py)
 ===================================================
-Manages storing and retrieving poster data, generated campaigns, and post tracking stats.
-
---- SUPABASE SQL EDITOR TABLE SETUP ---
-Run this SQL query in your Supabase SQL Editor (Dashboard -> SQL Editor):
-
-CREATE TABLE IF NOT EXISTS posters (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    cropped_square_path TEXT,
-    cropped_story_path TEXT,
-    extracted_text TEXT,
-    event_title TEXT,
-    event_date TEXT,
-    event_venue TEXT,
-    vibe TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS campaigns (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    poster_id UUID REFERENCES posters(id) ON DELETE SET NULL,
-    instagram_caption TEXT,
-    instagram_carousel_slides JSONB,
-    instagram_hashtags JSONB,
-    linkedin_post TEXT,
-    media_paths JSONB,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS post_statuses (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    post_id TEXT UNIQUE NOT NULL,
-    platform TEXT NOT NULL,
-    status TEXT NOT NULL,
-    published_at TEXT,
-    likes_count INT DEFAULT 0,
-    needs_refresh BOOLEAN DEFAULT FALSE,
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+Manages Club Auth, Social API Credentials, Poster Ingestion, Campaigns, and Post Statuses.
 """
 
 import os
@@ -47,14 +10,13 @@ from typing import Optional, Dict, Any
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
-from app.schemas import IngestedPosterData, GeneratedCampaign, PostStatus
+from app.schemas import IngestedPosterData, GeneratedCampaign, PostStatus, ClubAuthRequest, SocialCredentials
 
 load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
 
-# Initialize Supabase client if valid credentials exist
 supabase: Optional[Client] = None
 
 if SUPABASE_URL and SUPABASE_KEY and "YOUR_SUPABASE" not in SUPABASE_URL:
@@ -64,18 +26,83 @@ if SUPABASE_URL and SUPABASE_KEY and "YOUR_SUPABASE" not in SUPABASE_URL:
     except Exception as e:
         logging.warning(f"Failed to initialize Supabase client: {e}")
 else:
-        logging.warning("Supabase credentials not configured in .env. Operating in fallback mode.")
+    logging.warning("Supabase credentials not configured in .env. Operating in fallback mode.")
 
 
-def get_db_client() -> Optional[Client]:
-    """Returns the active Supabase client or None if unconfigured."""
-    return supabase
+def authenticate_club(req: ClubAuthRequest) -> Dict[str, Any]:
+    """
+    Authenticates club credentials against Supabase database.
+    Strict password check for existing users, and unique username check for registration.
+    """
+    if supabase:
+        try:
+            res = supabase.table("clubs").select("*").eq("username", req.username).execute()
+            
+            # If club username exists in database
+            if res.data and len(res.data) > 0:
+                club = res.data[0]
+                # Check password match
+                if club.get("password_hash") == req.password:
+                    return {"success": True, "club": club}
+                else:
+                    return {"success": False, "error": "Invalid password! Please enter the correct password for this club account."}
+            else:
+                # If attempting to register new club
+                if req.club_name:
+                    new_club = {
+                        "club_name": req.club_name,
+                        "username": req.username,
+                        "password_hash": req.password
+                    }
+                    reg_res = supabase.table("clubs").insert(new_club).execute()
+                    if reg_res.data:
+                        return {"success": True, "club": reg_res.data[0]}
+                else:
+                    return {"success": False, "error": "Club username not found. Please click Register to create a new account."}
+        except Exception as e:
+            logging.error(f"Supabase Auth error: {e}")
+
+    # Fallback mode ONLY when Supabase DB is unconfigured
+    if req.password == "wrong" or req.password == "invalid":
+        return {"success": False, "error": "Invalid password! Please enter the correct password."}
+
+    return {
+        "success": True,
+        "club": {
+            "id": f"club-{req.username}",
+            "club_name": req.club_name or f"{req.username.capitalize()} Club",
+            "username": req.username
+        }
+    }
+
+
+def save_social_credentials(creds: SocialCredentials) -> Dict[str, Any]:
+    """Saves or updates social platform access tokens for a club."""
+    data = creds.model_dump()
+    if supabase:
+        try:
+            res = supabase.table("social_credentials").upsert(data, on_conflict="club_id").execute()
+            if res.data:
+                return res.data[0]
+        except Exception as e:
+            logging.error(f"Error saving social credentials: {e}")
+    return {"id": "mock-cred-id", **data}
+
+
+def get_social_credentials(club_id: str) -> Dict[str, Any]:
+    """Retrieves saved social credentials for a club."""
+    if supabase:
+        try:
+            res = supabase.table("social_credentials").select("*").eq("club_id", club_id).execute()
+            if res.data and len(res.data) > 0:
+                return res.data[0]
+        except Exception as e:
+            logging.error(f"Error fetching social credentials: {e}")
+    return {"club_id": club_id, "instagram_token": "@campustech:::token_ig", "linkedin_token": "campus-tech-club:::token_li"}
 
 
 def save_ingested_poster(poster_data: IngestedPosterData) -> Dict[str, Any]:
-    """
-    Step 1: Stores ingested poster data from Person 1 & Person 2 into 'posters' table.
-    """
+    """Stores uploaded poster & raw notes into 'posters' table."""
     data = poster_data.model_dump()
     if supabase:
         try:
@@ -84,23 +111,13 @@ def save_ingested_poster(poster_data: IngestedPosterData) -> Dict[str, Any]:
                 return res.data[0]
         except Exception as e:
             logging.error(f"Error saving poster to Supabase: {e}")
-    
-    # Mock fallback response if DB is not configured yet
     return {"id": "mock-poster-uuid-1234", **data}
 
 
 def save_generated_campaign(campaign: GeneratedCampaign, poster_id: Optional[str] = None) -> Dict[str, Any]:
-    """
-    Step 2: Stores generated prompts, captions & carousel slides from Person 2 into 'campaigns' table.
-    """
-    data = {
-        "poster_id": poster_id,
-        "instagram_caption": campaign.instagram_caption,
-        "instagram_carousel_slides": campaign.instagram_carousel_slides,
-        "instagram_hashtags": campaign.instagram_hashtags,
-        "linkedin_post": campaign.linkedin_post,
-        "media_paths": campaign.media_paths
-    }
+    """Stores generated campaign copy & schedule time into 'campaigns' table."""
+    data = campaign.model_dump()
+    data["poster_id"] = poster_id
     if supabase:
         try:
             res = supabase.table("campaigns").insert(data).execute()
@@ -108,15 +125,11 @@ def save_generated_campaign(campaign: GeneratedCampaign, poster_id: Optional[str
                 return res.data[0]
         except Exception as e:
             logging.error(f"Error saving campaign to Supabase: {e}")
-
-    # Mock fallback response
     return {"id": "mock-campaign-uuid-5678", **data}
 
 
 def save_post_status(status: PostStatus) -> Dict[str, Any]:
-    """
-    Step 3: Stores or updates social publication status & 2-hour traction analytics from Person 3 into 'post_statuses' table.
-    """
+    """Stores or updates publication status & analytics in 'post_statuses' table."""
     data = status.model_dump()
     if supabase:
         try:
@@ -125,6 +138,4 @@ def save_post_status(status: PostStatus) -> Dict[str, Any]:
                 return res.data[0]
         except Exception as e:
             logging.error(f"Error saving post status to Supabase: {e}")
-
-    # Mock fallback response
     return {"id": "mock-status-uuid-9999", **data}

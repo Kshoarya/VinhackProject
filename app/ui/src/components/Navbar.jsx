@@ -1,45 +1,100 @@
 import React from 'react';
-import { Sparkles, Layers, ShieldCheck, Zap } from 'lucide-react';
+import { Zap, Database, BarChart3, Layers, CheckCircle2 } from 'lucide-react';
 
-export default function Navbar() {
+export default function Navbar({ activeTab, setActiveTab, selectedClub, setSelectedClub }) {
   return (
     <nav style={{
-      borderBottom: '1px solid var(--border-color)',
-      background: 'rgba(10, 13, 20, 0.8)',
-      backdropFilter: 'blur(12px)',
+      borderBottom: '1px solid var(--border-muted)',
+      background: 'rgba(6, 9, 17, 0.85)',
+      backdropFilter: 'blur(16px)',
       position: 'sticky',
       top: 0,
       zIndex: 100,
-      padding: '16px 32px',
+      padding: '14px 32px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between'
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      {/* Brand Identity */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
         <div style={{
-          width: '40px',
-          height: '40px',
+          width: '42px',
+          height: '42px',
           borderRadius: '12px',
-          background: 'linear-gradient(135deg, var(--accent-indigo), var(--accent-purple))',
+          background: 'linear-gradient(135deg, var(--primary-blue), var(--accent-cyan))',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 0 15px rgba(99, 102, 241, 0.5)'
+          boxShadow: '0 0 20px rgba(37, 99, 235, 0.5)'
         }}>
-          <Zap size={22} color="#ffffff" />
+          <Zap size={24} color="#ffffff" />
         </div>
         <div>
-          <h2 className="gradient-text" style={{ fontSize: '1.4rem', fontWeight: 800 }}>CampusSync</h2>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>AI Autonomous Event Marketing Pipeline</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h1 className="gradient-blue-text" style={{ fontSize: '1.4rem', fontWeight: 800 }}>CampusSync</h1>
+            <span style={{
+              fontSize: '0.65rem',
+              fontWeight: 700,
+              letterSpacing: '0.08em',
+              padding: '2px 8px',
+              borderRadius: '4px',
+              background: 'rgba(59, 130, 246, 0.15)',
+              color: '#60a5fa',
+              border: '1px solid rgba(59, 130, 246, 0.3)'
+            }}>
+              AI ENGINE
+            </span>
+          </div>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Autonomous Event Social Marketing Pipeline</span>
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <div className="badge badge-purple">
-          <Sparkles size={14} /> Hackathon 20-Hr Sprint
+      {/* Navigation Controls & Club Selector */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        {/* Active Club Selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Active Club:</span>
+          <select
+            value={selectedClub}
+            onChange={(e) => setSelectedClub(e.target.value)}
+            style={{
+              background: 'rgba(15, 23, 42, 0.8)',
+              color: 'var(--text-white)',
+              border: '1px solid var(--border-muted)',
+              padding: '6px 12px',
+              borderRadius: '8px',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              outline: 'none'
+            }}
+          >
+            <option value="Campus Tech Club">Campus Tech Club</option>
+            <option value="ACM Student Chapter">ACM Student Chapter</option>
+            <option value="Robotics & AI Society">Robotics & AI Society</option>
+            <option value="Design & Innovation Lab">Design & Innovation Lab</option>
+          </select>
         </div>
-        <div className="badge badge-green">
-          <ShieldCheck size={14} /> Strict Directory Isolation Active
+
+        {/* Navigation Tabs */}
+        <div style={{ display: 'flex', background: 'rgba(15, 23, 42, 0.6)', padding: '4px', borderRadius: '10px', border: '1px solid var(--border-muted)' }}>
+          <button
+            className={`nav-tab ${activeTab === 'pipeline' ? 'active' : ''}`}
+            onClick={() => setActiveTab('pipeline')}
+          >
+            <Layers size={16} /> Campaign Creator
+          </button>
+          <button
+            className={`nav-tab ${activeTab === 'oversight' ? 'active' : ''}`}
+            onClick={() => setActiveTab('oversight')}
+          >
+            <BarChart3 size={16} /> Live Oversight
+          </button>
+        </div>
+
+        {/* Database Status Indicator */}
+        <div className="status-pill status-green">
+          <Database size={13} /> Supabase Live
         </div>
       </div>
     </nav>
