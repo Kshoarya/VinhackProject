@@ -1,5 +1,5 @@
 import React from 'react';
-import { Zap, Sparkles, ArrowRight, Lock, UserPlus } from 'lucide-react';
+import { Zap, ArrowRight, Lock, UserPlus } from 'lucide-react';
 
 export default function IntroLanding({ onGoToLogin, onGoToSignup }) {
   return (
@@ -22,9 +22,6 @@ export default function IntroLanding({ onGoToLogin, onGoToSignup }) {
           <Zap size={34} fill="#000000" color="#000000" />
         </div>
 
-        <span className="pill-badge pill-badge-coral" style={{ marginBottom: '16px', fontSize: '0.78rem' }}>
-          <Sparkles size={14} /> Vinhack 20-Hour Hackathon
-        </span>
         <h1 style={{ fontSize: '2.8rem', fontWeight: 900, color: 'var(--text-main)', marginBottom: '14px', lineHeight: 1.1 }}>
           SocialFlow_Club AI Engine
         </h1>

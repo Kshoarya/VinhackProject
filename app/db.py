@@ -76,16 +76,19 @@ def authenticate_club(req: ClubAuthRequest) -> Dict[str, Any]:
     }
 
 
+_SOCIAL_CREDENTIALS_CACHE: Dict[str, Dict[str, Any]] = {}
+
 def save_social_credentials(creds: SocialCredentials) -> Dict[str, Any]:
     """Saves or updates social platform access tokens for a club."""
     data = creds.model_dump()
+    _SOCIAL_CREDENTIALS_CACHE[creds.club_id] = data
     if supabase:
         try:
             res = supabase.table("social_credentials").upsert(data, on_conflict="club_id").execute()
             if res.data:
                 return res.data[0]
         except Exception as e:
-            logging.error(f"Error saving social credentials: {e}")
+            logging.error(f"Error saving social credentials to Supabase: {e}")
     return {"id": "mock-cred-id", **data}
 
 
@@ -95,14 +98,61 @@ def get_social_credentials(club_id: str) -> Dict[str, Any]:
         try:
             res = supabase.table("social_credentials").select("*").eq("club_id", club_id).execute()
             if res.data and len(res.data) > 0:
+                _SOCIAL_CREDENTIALS_CACHE[club_id] = res.data[0]
                 return res.data[0]
         except Exception as e:
             logging.error(f"Error fetching social credentials: {e}")
-    return {"club_id": club_id, "instagram_token": "@campustech:::token_ig", "linkedin_token": "campus-tech-club:::token_li"}
+
+    if club_id in _SOCIAL_CREDENTIALS_CACHE:
+        return _SOCIAL_CREDENTIALS_CACHE[club_id]
+
+    return {"club_id": club_id, "instagram_token": "", "linkedin_token": ""}
 
 
-def save_ingested_poster(poster_data: IngestedPosterData) -> Dict[str, Any]:
-    """Stores uploaded poster & raw notes into 'posters' table."""
+def process_media_path_for_storage(path_or_url: str, base_url: str = "http://localhost:8000") -> str:
+    """
+    Converts a local image file path into a public web URL accessible by any external user/device.
+    Tries uploading to Supabase Storage first; falls back to static backend HTTP URL.
+    """
+    if not path_or_url or path_or_url.startswith(("http://", "https://", "data:")):
+        return path_or_url
+
+    clean_path = path_or_url.replace("\\", "/")
+    
+    # 1. Try uploading to Supabase Storage bucket 'posters' if client is initialized
+    if supabase and os.path.exists(clean_path):
+        try:
+            filename = os.path.basename(clean_path)
+            storage_path = f"public/{filename}"
+            with open(clean_path, "rb") as f:
+                file_bytes = f.read()
+            
+            res = supabase.storage.from_("posters").upload(
+                path=storage_path,
+                file=file_bytes,
+                file_options={"upsert": "true", "content-type": "image/png"}
+            )
+            if res:
+                public_url = supabase.storage.from_("posters").get_public_url(storage_path)
+                if public_url:
+                    logging.info(f"Uploaded poster to Supabase Storage: {public_url}")
+                    return public_url
+        except Exception as e:
+            logging.warning(f"Supabase Storage upload fallback: {e}")
+
+    # 2. Public Static HTTP Server URL fallback
+    if clean_path.startswith("uploads/"):
+        return f"{base_url.rstrip('/')}/{clean_path}"
+    elif clean_path.startswith("/uploads/"):
+        return f"{base_url.rstrip('/')}{clean_path}"
+    else:
+        return f"{base_url.rstrip('/')}/uploads/{clean_path.lstrip('/')}"
+
+
+def save_ingested_poster(poster_data: IngestedPosterData, base_url: str = "http://localhost:8000") -> Dict[str, Any]:
+    """Stores uploaded poster & raw notes into 'posters' table with public image URLs."""
+    poster_data.cropped_square_path = process_media_path_for_storage(poster_data.cropped_square_path, base_url)
+    poster_data.cropped_story_path = process_media_path_for_storage(poster_data.cropped_story_path, base_url)
     data = poster_data.model_dump()
     if supabase:
         try:
@@ -110,12 +160,23 @@ def save_ingested_poster(poster_data: IngestedPosterData) -> Dict[str, Any]:
             if res.data:
                 return res.data[0]
         except Exception as e:
-            logging.error(f"Error saving poster to Supabase: {e}")
+            if "raw_notes" in data:
+                clean_data = {k: v for k, v in data.items() if k != "raw_notes"}
+                try:
+                    res = supabase.table("posters").insert(clean_data).execute()
+                    if res.data:
+                        return res.data[0]
+                except Exception as retry_err:
+                    logging.error(f"Error saving poster to Supabase: {retry_err}")
+            else:
+                logging.error(f"Error saving poster to Supabase: {e}")
     return {"id": "mock-poster-uuid-1234", **data}
 
 
-def save_generated_campaign(campaign: GeneratedCampaign, poster_id: Optional[str] = None) -> Dict[str, Any]:
-    """Stores generated campaign copy & schedule time into 'campaigns' table."""
+def save_generated_campaign(campaign: GeneratedCampaign, poster_id: Optional[str] = None, base_url: str = "http://localhost:8000") -> Dict[str, Any]:
+    """Stores generated campaign copy & schedule time into 'campaigns' table with public media URLs."""
+    if campaign.media_paths:
+        campaign.media_paths = [process_media_path_for_storage(p, base_url) for p in campaign.media_paths]
     data = campaign.model_dump()
     data["poster_id"] = poster_id
     if supabase:
@@ -124,7 +185,16 @@ def save_generated_campaign(campaign: GeneratedCampaign, poster_id: Optional[str
             if res.data:
                 return res.data[0]
         except Exception as e:
-            logging.error(f"Error saving campaign to Supabase: {e}")
+            if "scheduled_at" in data:
+                clean_data = {k: v for k, v in data.items() if k != "scheduled_at"}
+                try:
+                    res = supabase.table("campaigns").insert(clean_data).execute()
+                    if res.data:
+                        return res.data[0]
+                except Exception as retry_err:
+                    logging.error(f"Error saving campaign to Supabase: {retry_err}")
+            else:
+                logging.error(f"Error saving campaign to Supabase: {e}")
     return {"id": "mock-campaign-uuid-5678", **data}
 
 

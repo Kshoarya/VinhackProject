@@ -33,6 +33,42 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  useEffect(() => {
+    // Check if redirected back from Unipile Hosted Auth Wizard
+    const params = new URLSearchParams(window.location.search);
+    const authStatus = params.get('auth_status');
+    const clubId = params.get('club_id') || 'club_default';
+    const accountId = params.get('account_id') || params.get('account') || params.get('account_uuid');
+
+    if (authStatus === 'success' || accountId) {
+      const activeClub = clubInfo || { id: clubId, club_name: 'Campus Tech Club' };
+      setClubInfo(activeClub);
+
+      if (accountId) {
+        console.log("[Unipile Redirect] Extracted Account ID:", accountId);
+        const credData = {
+          club_id: clubId,
+          instagram_token: '@campustech_official',
+          linkedin_token: accountId
+        };
+        setSocialCreds(credData);
+        fetch('/api/social-credentials', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(credData)
+        }).catch((err) => console.warn("Failed to sync Unipile credentials to backend:", err));
+      }
+
+      setActiveTab('creator');
+      setCreatorStep(3); // Jump straight to Step 3: Poster Upload (Image Ingest)
+    } else if (authStatus === 'failed') {
+      const activeClub = clubInfo || { id: clubId, club_name: 'Campus Tech Club' };
+      setClubInfo(activeClub);
+      setActiveTab('creator');
+      setCreatorStep(2); // Stay on Social Settings to retry
+    }
+  }, []);
+
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
@@ -153,7 +189,8 @@ export default function App() {
     try {
       let statuses;
       try {
-        const res = await fetch('/api/publish', {
+        const cId = clubInfo?.id || 'club_default';
+        const res = await fetch(`/api/publish?club_id=${encodeURIComponent(cId)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(finalCampaign)

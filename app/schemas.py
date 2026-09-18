@@ -15,8 +15,8 @@ class ClubAuthRequest(BaseModel):
 
 class SocialCredentials(BaseModel):
     club_id: str = Field(..., description="Associated club UUID or ID")
-    instagram_token: str = Field(..., description="Instagram API access token / handle")
-    linkedin_token: str = Field(..., description="LinkedIn OAuth token / account ID")
+    instagram_token: Optional[str] = Field(default="", description="Instagram API access token / handle")
+    linkedin_token: Optional[str] = Field(default="", description="LinkedIn OAuth token / account ID")
 
 class IngestedPosterData(BaseModel):
     cropped_square_path: str = Field(..., description="Path to 1:1 square crop")

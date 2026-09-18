@@ -12,6 +12,7 @@ import os
 from typing import List, Optional
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.schemas import IngestedPosterData, GeneratedCampaign, PostStatus, ClubAuthRequest, SocialCredentials
 from app.ingestion.cropper import crop_poster_image
@@ -43,6 +44,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 @app.get("/api/health")
 def health_check():
     return {"status": "ok", "service": "CampusSync Orchestrator", "owner": "Person 1"}
@@ -66,16 +70,63 @@ async def fetch_social_credentials(club_id: str):
     return get_social_credentials(club_id)
 
 @app.get("/api/unipile/connect-url")
-async def get_unipile_connect_url():
-    """Generates a dynamic Unipile hosted OAuth URL for connecting any LinkedIn account."""
+async def get_unipile_connect_url(
+    club_id: Optional[str] = "club_default",
+    redirect_url: Optional[str] = "http://localhost:3000",
+    providers: Optional[str] = "LINKEDIN,INSTAGRAM"
+):
+    """Generates a dynamic Unipile Hosted Auth Wizard URL with redirection & callback webhook."""
     try:
         from app.auth.unipile import UnipileAuth
         auth = UnipileAuth()
-        url = auth.create_linkedin_auth_link()
+
+        provider_list = [p.strip().upper() for p in providers.split(",") if p.strip()] if providers else ["LINKEDIN", "INSTAGRAM"]
+        
+        success_redirect = f"{redirect_url.rstrip('/')}?auth_status=success&club_id={club_id}"
+        failure_redirect = f"{redirect_url.rstrip('/')}?auth_status=failed&club_id={club_id}"
+        notify_webhook = "http://localhost:8000/api/unipile/callback"
+
+        url = auth.create_hosted_auth_link(
+            user_id=club_id,
+            notify_url=notify_webhook,
+            success_redirect_url=success_redirect,
+            failure_redirect_url=failure_redirect,
+            providers=provider_list,
+            enable_unilogin=True,
+            expires_in_minutes=60
+        )
         return {"success": True, "url": url}
     except Exception as e:
         print(f"[Unipile Auth Link Error] {e}")
-        return {"success": False, "error": str(e), "url": "https://api42.unipile.com"}
+        return {"success": False, "error": str(e), "url": None}
+
+
+@app.post("/api/unipile/callback")
+async def unipile_auth_callback(payload: dict):
+    """Callback webhook invoked by Unipile after account authentication."""
+    try:
+        print(f"[Unipile Callback Payload] {payload}")
+        status = payload.get("status")
+        account_id = payload.get("account_id")
+        club_id = payload.get("name") or "club_default"
+
+        if status in ("CREATION_SUCCESS", "RECONNECTED") and account_id:
+            from app.db import save_social_credentials
+            from app.schemas import SocialCredentials
+            
+            creds = SocialCredentials(
+                club_id=club_id,
+                linkedin_access_token=account_id,
+                linkedin_account_id=account_id
+            )
+            save_social_credentials(creds)
+            print(f"[Unipile Callback Success] Linked Account ID '{account_id}' to Club '{club_id}'")
+
+        return {"status": "ok", "received": payload}
+    except Exception as e:
+        print(f"[Unipile Callback Error] {e}")
+        return {"status": "error", "message": str(e)}
+
 
 
 @app.post("/api/ingest", response_model=IngestedPosterData)
@@ -113,10 +164,10 @@ async def generate_campaign_content(poster_data: IngestedPosterData, club_name: 
         raise HTTPException(status_code=500, detail=f"Campaign generation error: {str(e)}")
 
 @app.post("/api/publish", response_model=List[PostStatus])
-async def publish_social(campaign: GeneratedCampaign):
+async def publish_social(campaign: GeneratedCampaign, club_id: Optional[str] = "club_default"):
     """Step 3: Dispatches social campaign immediately or registers scheduled time."""
     try:
-        post_statuses = publish_campaign(campaign)
+        post_statuses = publish_campaign(campaign, club_id=club_id)
         if campaign.scheduled_at:
             for s in post_statuses:
                 s.status = "scheduled"

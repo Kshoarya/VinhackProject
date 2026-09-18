@@ -45,10 +45,10 @@ class Publisher:  # Decides which platform should receive the request.
         publisher = self.publishers[platform]
         return publisher.get_metrics(post_id)
 
-def publish_campaign(campaign: GeneratedCampaign) -> List[PostStatus]:
+def publish_campaign(campaign: GeneratedCampaign, club_id: str = "club_default") -> List[PostStatus]:
     """
     High-level dispatch orchestrator for publishing to Instagram and LinkedIn.
-    Uses Person 3's LinkedInPublisher when credentials exist, with fallback support.
+    Uses dynamic Unipile credentials saved for the club, with fallback support.
     """
     statuses = []
 
@@ -63,10 +63,17 @@ def publish_campaign(campaign: GeneratedCampaign) -> List[PostStatus]:
     )
     statuses.append(ig_status)
 
-    # 2. LinkedIn Publishing via Person 3's Unipile Publisher
+    # 2. LinkedIn Publishing via dynamic Unipile account ID
     try:
         from app.dispatch.linkedin import LinkedInPublisher
-        linkedin_pub = LinkedInPublisher()
+        from app.db import get_social_credentials
+        
+        creds = get_social_credentials(club_id)
+        dynamic_account = creds.get("linkedin_token") or creds.get("linkedin_account_id") or None
+        if dynamic_account and ":::" in dynamic_account:
+            dynamic_account = dynamic_account.split(":::")[-1]
+
+        linkedin_pub = LinkedInPublisher(account_id=dynamic_account)
         
         img_path = None
         if campaign.media_paths:

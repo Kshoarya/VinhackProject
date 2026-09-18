@@ -13,7 +13,18 @@ export default function SocialSettings({ clubInfo, onSaveCredentials }) {
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
+  const [authBanner, setAuthBanner] = useState(null);
+
   useEffect(() => {
+    // Check URL params for Unipile redirect callback status
+    const params = new URLSearchParams(window.location.search);
+    const authStatus = params.get('auth_status');
+    if (authStatus === 'success') {
+      setAuthBanner({ type: 'success', text: 'LinkedIn account connected successfully via Unipile Hosted Auth!' });
+    } else if (authStatus === 'failed') {
+      setAuthBanner({ type: 'error', text: 'LinkedIn account authentication failed or was cancelled.' });
+    }
+
     const fetchCreds = async () => {
       if (!clubInfo?.id) return;
       try {
@@ -86,6 +97,12 @@ export default function SocialSettings({ clubInfo, onSaveCredentials }) {
             Configure your official Instagram & LinkedIn credentials to authorize automated multi-platform post publishing.
           </p>
         </div>
+
+        {authBanner && (
+          <div className={`curved-card ${authBanner.type === 'success' ? 'curved-card-emerald' : 'curved-card-coral'}`} style={{ padding: '12px 16px', fontSize: '0.85rem', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', color: authBanner.type === 'success' ? '#059669' : '#dc2626', fontWeight: 700 }}>
+            <ShieldCheck size={18} /> {authBanner.text}
+          </div>
+        )}
 
         {savedSuccess && (
           <div className="curved-card curved-card-emerald" style={{ padding: '12px 16px', fontSize: '0.85rem', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', color: '#059669', fontWeight: 700 }}>
@@ -244,12 +261,14 @@ export default function SocialSettings({ clubInfo, onSaveCredentials }) {
                 type="button"
                 onClick={async () => {
                   try {
-                    const res = await fetch('/api/unipile/connect-url');
+                    const clubId = clubInfo?.id || 'club_default';
+                    const currentUrl = window.location.origin + window.location.pathname;
+                    const res = await fetch(`/api/unipile/connect-url?club_id=${encodeURIComponent(clubId)}&redirect_url=${encodeURIComponent(currentUrl)}&providers=LINKEDIN,INSTAGRAM`);
                     const data = await res.json();
                     if (data.url) {
-                      window.open(data.url, '_blank');
+                      window.location.href = data.url;
                     } else {
-                      alert("Could not generate Unipile Auth link. Please check credentials.");
+                      alert(`Could not generate Unipile Auth link: ${data.error || 'Unknown error'}`);
                     }
                   } catch (e) {
                     alert("Error reaching Unipile auth endpoint.");
