@@ -1,40 +1,45 @@
-"""
-Social Media Posting API Integration (PERSON 3 ONLY)
-===================================================
-Primary Focus: Social Media Posting API Integration (Ayrshare / Social Platform APIs)
-Folder Ownership: app/dispatch/
-"""
+from app.dispatch.base import SocialPublisher  #Any social media publisher we create must know how to publish() and get_metrics().
 
-from typing import List
-from app.schemas import GeneratedCampaign, PostStatus
+class Publisher:  #Decides which platform should receive the request.
 
-def publish_campaign(campaign: GeneratedCampaign) -> List[PostStatus]:
-    """
-    Publishes generated campaign content across target social media accounts.
-    
-    Args:
-        campaign (GeneratedCampaign): Prepared captions, hashtags, and media assets.
-        
-    Returns:
-        List[PostStatus]: Status records for each published post on Instagram & LinkedIn.
-    """
-    # TODO (Person 3): Integrate Ayrshare API / Meta Graph API / LinkedIn Share API
-    
-    return [
-        PostStatus(
-            post_id="ig_post_9876",
-            platform="instagram",
-            status="published",
-            published_at="2026-09-18T18:00:00Z",
-            likes_count=18,
-            needs_refresh=False
-        ),
-        PostStatus(
-            post_id="li_post_5432",
-            platform="linkedin",
-            status="published",
-            published_at="2026-09-18T18:05:00Z",
-            likes_count=32,
-            needs_refresh=False
+    def __init__(self):
+        self.publishers : dict[str, SocialPublisher] = {}  #creating a platform → publisher mapping.
+
+    def register(self, platform: str, publisher: SocialPublisher): #add a platform publisher to our dictionary.
+        self.publishers[platform] = publisher
+
+    def publish(
+        self,
+        platform: str,
+        caption: str,
+        image_url: str
+    ) -> str:
+        """
+        Publish content using the registered platform publisher.
+        """
+
+        if platform not in self.publishers:
+            raise ValueError(
+                f"No publisher registered for platform: {platform}"
+            )
+
+        publisher = self.publishers[platform]
+
+        return publisher.publish(
+            caption=caption,
+            image_url=image_url
         )
-    ]
+
+    def get_metrics(self, platform: str, post_id: str) -> dict:
+        """
+        Get metrics for a published post.
+        """
+
+        if platform not in self.publishers:
+            raise ValueError(
+                f"No publisher registered for platform: {platform}"
+            )
+
+        publisher = self.publishers[platform]
+
+        return publisher.get_metrics(post_id)
