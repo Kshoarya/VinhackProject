@@ -71,158 +71,129 @@ export default function Login({ initialMode = 'login', onLoginSuccess, onBackToI
           <ArrowLeft size={14} /> Back to Intro
         </button>
 
-        {/* Title Block in Curved Purple Card */}
-        <div className="curved-card curved-card-purple" style={{ textAlign: 'center', padding: '16px', marginBottom: '16px' }}>
+        {/* Title Block (Clean layout inside main card, no inner box) */}
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <div style={{
-            width: '42px',
-            height: '42px',
+            width: '44px',
+            height: '44px',
             borderRadius: '14px',
-            background: 'linear-gradient(135deg, var(--accent-blue), var(--accent-purple))',
+            background: 'var(--pop-tab-yellow)',
+            border: '2px solid var(--border-pop)',
+            boxShadow: 'var(--shadow-pop-sm)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            margin: '0 auto 8px',
-            boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)'
+            margin: '0 auto 10px',
+            color: '#000000'
           }}>
-            <KeyRound size={22} color="#ffffff" />
+            <KeyRound size={22} />
           </div>
 
-          <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
             {authMode === 'login' ? 'Club Account Login' : 'Register New Club Account'}
           </h2>
-          <p style={{ color: 'var(--text-sub)', fontSize: '0.75rem', marginTop: '2px' }}>
+          <p style={{ color: 'var(--text-sub)', fontSize: '0.78rem', marginTop: '4px' }}>
             {authMode === 'login' ? 'Enter existing credentials verified against Supabase DB' : 'Create & store new club credentials in Supabase DB'}
           </p>
         </div>
 
         {errorMsg && (
-          <div className="curved-card curved-card-coral" style={{ padding: '10px 14px', fontSize: '0.8rem', marginBottom: '14px', textAlign: 'center', color: '#e11d48', fontWeight: 700 }}>
+          <div style={{ padding: '10px 14px', fontSize: '0.8rem', marginBottom: '16px', textAlign: 'center', color: '#ef4444', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '12px', border: '1px solid rgba(239, 68, 68, 0.3)', fontWeight: 700 }}>
             {errorMsg}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {authMode === 'signup' && (
-            <div className="curved-card curved-card-emerald" style={{ padding: '12px' }}>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, marginBottom: '4px', color: 'var(--text-main)' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, marginBottom: '6px', color: 'var(--text-main)' }}>
                 Official Club Name *
               </label>
               <div style={{ position: 'relative' }}>
-                <Building2 size={16} color="var(--accent-purple)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                <Building2 size={18} color="var(--accent-purple)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', zIndex: 5 }} />
                 <input
                   type="text"
+                  className="custom-input"
                   value={clubName}
                   onChange={(e) => setClubName(e.target.value)}
                   placeholder="e.g. Campus Tech Club"
-                  style={{
-                    width: '100%',
-                    background: 'var(--card-white)',
-                    color: 'var(--text-main)',
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: '12px',
-                    padding: '9px 12px 9px 38px',
-                    fontSize: '0.85rem',
-                    outline: 'none'
-                  }}
+                  style={{ paddingLeft: '44px', fontSize: '0.9rem', height: '44px' }}
                 />
               </div>
             </div>
           )}
 
-          <div className="curved-card curved-card-blue" style={{ padding: '12px' }}>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, marginBottom: '4px', color: 'var(--text-main)' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, marginBottom: '6px', color: 'var(--text-main)' }}>
               Username *
             </label>
             <div style={{ position: 'relative' }}>
-              <User size={16} color="var(--accent-blue)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <User size={18} color="var(--accent-blue)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', zIndex: 5 }} />
               <input
                 type="text"
+                className="custom-input"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="e.g. campustech"
-                style={{
-                  width: '100%',
-                  background: 'var(--card-white)',
-                  color: 'var(--text-main)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: '12px',
-                  padding: '9px 12px 9px 38px',
-                  fontSize: '0.85rem',
-                  outline: 'none'
-                }}
+                style={{ paddingLeft: '44px', fontSize: '0.9rem', height: '44px' }}
               />
             </div>
           </div>
 
-          <div className="curved-card curved-card-amber" style={{ padding: '12px' }}>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, marginBottom: '4px', color: 'var(--text-main)' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, marginBottom: '6px', color: 'var(--text-main)' }}>
               Password *
             </label>
             <div style={{ position: 'relative' }}>
-              <Lock size={16} color="#d97706" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <Lock size={18} color="var(--accent-purple)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', zIndex: 5 }} />
               <input
                 type={showPassword ? "text" : "password"}
+                className="custom-input"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                style={{
-                  width: '100%',
-                  background: 'var(--card-white)',
-                  color: 'var(--text-main)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: '12px',
-                  padding: '9px 38px 9px 38px',
-                  fontSize: '0.85rem',
-                  outline: 'none'
-                }}
+                style={{ paddingLeft: '44px', paddingRight: '44px', fontSize: '0.9rem', height: '44px' }}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 style={{
                   position: 'absolute',
-                  right: '12px',
+                  right: '14px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   background: 'transparent',
                   border: 'none',
                   color: 'var(--text-muted)',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  zIndex: 5
                 }}
               >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
 
           {authMode === 'login' && (
-            <div className="curved-card curved-card-emerald" style={{ padding: '12px' }}>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, marginBottom: '4px', color: 'var(--text-main)' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, marginBottom: '6px', color: 'var(--text-main)' }}>
                 Club Name Override (Optional)
               </label>
               <div style={{ position: 'relative' }}>
-                <Building2 size={16} color="var(--accent-purple)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                <Building2 size={18} color="var(--accent-purple)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', zIndex: 5 }} />
                 <input
                   type="text"
+                  className="custom-input"
                   value={clubName}
                   onChange={(e) => setClubName(e.target.value)}
                   placeholder="e.g. Campus Tech Club"
-                  style={{
-                    width: '100%',
-                    background: 'var(--card-white)',
-                    color: 'var(--text-main)',
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: '12px',
-                    padding: '9px 12px 9px 38px',
-                    fontSize: '0.85rem',
-                    outline: 'none'
-                  }}
+                  style={{ paddingLeft: '44px', fontSize: '0.9rem', height: '44px' }}
                 />
               </div>
             </div>
           )}
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-4px' }}>
             <button
               type="button"
               onClick={fillDemoCredentials}
@@ -230,7 +201,7 @@ export default function Login({ initialMode = 'login', onLoginSuccess, onBackToI
                 background: 'transparent',
                 border: 'none',
                 color: 'var(--accent-blue)',
-                fontSize: '0.75rem',
+                fontSize: '0.78rem',
                 fontWeight: 700,
                 cursor: 'pointer',
                 display: 'flex',
@@ -238,7 +209,7 @@ export default function Login({ initialMode = 'login', onLoginSuccess, onBackToI
                 gap: '4px'
               }}
             >
-              <Sparkles size={12} /> Auto-Fill Demo Credentials
+              <Sparkles size={13} /> Auto-Fill Demo Credentials
             </button>
           </div>
 
@@ -246,7 +217,7 @@ export default function Login({ initialMode = 'login', onLoginSuccess, onBackToI
             type="submit"
             className="btn-primary-pill"
             disabled={isLoading}
-            style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: '0.9rem', marginTop: '4px' }}
+            style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: '0.95rem', marginTop: '4px' }}
           >
             {authMode === 'login' ? <LogIn size={16} /> : <UserPlus size={16} />}
             {isLoading ? "Authenticating..." : authMode === 'login' ? "Login to Dashboard" : "Register & Save Account"}

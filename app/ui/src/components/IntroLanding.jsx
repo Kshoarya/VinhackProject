@@ -28,7 +28,7 @@ export default function IntroLanding({ onGoToLogin, onGoToSignup }) {
           <Sparkles size={13} /> Vinhack 20-Hour Hackathon
         </span>
         <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-main)', marginBottom: '12px', lineHeight: 1.1 }}>
-          CampusSync AI Engine
+          SocialFlow_Club AI Engine
         </h1>
         <p style={{ color: 'var(--text-sub)', fontSize: '0.98rem', fontWeight: 700, maxWidth: '740px', margin: '0 auto 26px', lineHeight: 1.6 }}>
           Autonomous Event Social Marketing Engine for Campus Clubs. Convert poster images into multi-platform campaigns for Instagram and LinkedIn automatically.

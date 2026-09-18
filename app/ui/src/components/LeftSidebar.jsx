@@ -30,7 +30,7 @@ export default function LeftSidebar({ activeTab, setActiveTab, theme, toggleThem
             <Zap size={20} />
           </div>
           <div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>CampusSync</h3>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--text-main)', margin: 0, letterSpacing: '-0.02em' }}>SocialFlow_Club</h3>
             <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 800, letterSpacing: '0.05em' }}>AI ENGINE</span>
           </div>
         </div>
