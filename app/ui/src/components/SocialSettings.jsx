@@ -230,14 +230,37 @@ export default function SocialSettings({ clubInfo, onSaveCredentials }) {
 
           {/* Action Row */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px' }}>
-            <button
-              type="button"
-              onClick={fillDemoTokens}
-              className="btn-secondary-pill"
-              style={{ fontSize: '0.8rem', padding: '8px 16px' }}
-            >
-              <Sparkles size={14} color="var(--accent-blue)" /> Auto-Fill Demo Credentials & Tokens
-            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={fillDemoTokens}
+                className="btn-secondary-pill"
+                style={{ fontSize: '0.8rem', padding: '8px 16px' }}
+              >
+                <Sparkles size={14} color="var(--accent-blue)" /> Auto-Fill Demo Credentials
+              </button>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    const res = await fetch('/api/unipile/connect-url');
+                    const data = await res.json();
+                    if (data.url) {
+                      window.open(data.url, '_blank');
+                    } else {
+                      alert("Could not generate Unipile Auth link. Please check credentials.");
+                    }
+                  } catch (e) {
+                    alert("Error reaching Unipile auth endpoint.");
+                  }
+                }}
+                className="btn-secondary-pill"
+                style={{ fontSize: '0.8rem', padding: '8px 16px', background: 'var(--pop-tab-blue)', color: '#000' }}
+              >
+                <Linkedin size={14} /> Connect LinkedIn (Unipile OAuth)
+              </button>
+            </div>
 
             <button
               type="submit"

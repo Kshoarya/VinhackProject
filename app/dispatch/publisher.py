@@ -1,5 +1,6 @@
 import time
 from datetime import datetime
+from pathlib import Path
 from typing import List
 from app.dispatch.base import SocialPublisher
 from app.schemas import GeneratedCampaign, PostStatus
@@ -66,7 +67,21 @@ def publish_campaign(campaign: GeneratedCampaign) -> List[PostStatus]:
     try:
         from app.dispatch.linkedin import LinkedInPublisher
         linkedin_pub = LinkedInPublisher()
-        img_path = campaign.media_paths[0] if campaign.media_paths else "uploads/poster.png"
+        
+        img_path = None
+        if campaign.media_paths:
+            for p in campaign.media_paths:
+                if Path(p).exists():
+                    img_path = p
+                    break
+        if not img_path:
+            for fp in ["uploads/poster.png", "app/dispatch/images.jpeg"]:
+                if Path(fp).exists():
+                    img_path = fp
+                    break
+        if not img_path:
+            img_path = "app/dispatch/images.jpeg"
+
         post_id = linkedin_pub.publish(campaign.linkedin_post, img_path)
         li_status = PostStatus(
             post_id=post_id,
@@ -89,4 +104,4 @@ def publish_campaign(campaign: GeneratedCampaign) -> List[PostStatus]:
         )
         statuses.append(li_status)
 
-    return statuses
+    return statuses

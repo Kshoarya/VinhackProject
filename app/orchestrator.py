@@ -65,6 +65,19 @@ async def fetch_social_credentials(club_id: str):
     """Fetches saved social API credentials for a club."""
     return get_social_credentials(club_id)
 
+@app.get("/api/unipile/connect-url")
+async def get_unipile_connect_url():
+    """Generates a dynamic Unipile hosted OAuth URL for connecting any LinkedIn account."""
+    try:
+        from app.auth.unipile import UnipileAuth
+        auth = UnipileAuth()
+        url = auth.create_linkedin_auth_link()
+        return {"success": True, "url": url}
+    except Exception as e:
+        print(f"[Unipile Auth Link Error] {e}")
+        return {"success": False, "error": str(e), "url": "https://api42.unipile.com"}
+
+
 @app.post("/api/ingest", response_model=IngestedPosterData)
 async def ingest_poster(files: List[UploadFile] = File(...), raw_notes: Optional[str] = Form("")):
     """Step 1: Ingests multiple uploaded poster images and raw notes."""
