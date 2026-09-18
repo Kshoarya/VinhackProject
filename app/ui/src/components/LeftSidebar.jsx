@@ -64,17 +64,11 @@ export default function LeftSidebar({ activeTab, setActiveTab, theme, toggleThem
             padding: '9px 12px',
             fontSize: '0.8rem',
             background: activeTab === 'settings' ? 'var(--pop-tab-purple)' : 'var(--card-purple)',
-            color: activeTab === 'settings' ? '#000000' : 'var(--text-main)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
+            color: activeTab === 'settings' ? '#000000' : 'var(--text-main)'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Settings size={15} />
-            <span>Authorization</span>
-          </div>
-          <span className="pill-badge pill-badge-blue" style={{ fontSize: '0.58rem', padding: '1px 5px' }}>IG & LI</span>
+          <Settings size={15} />
+          <span>Authorization</span>
         </button>
 
         {/* Theme Toggle Button */}
