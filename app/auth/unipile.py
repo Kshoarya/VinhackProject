@@ -22,7 +22,7 @@ class UnipileAuth:
         if not self.dsn.startswith(("http://", "https://")):
             self.dsn = f"https://{self.dsn}"
 
-    def create_linkedin_auth_link(self):
+    def create_linkedin_auth_link(self, user_id, notify_url):
 
         expires_on = (
             datetime.now(timezone.utc)
@@ -33,7 +33,9 @@ class UnipileAuth:
             "type": "create",
             "providers": ["LINKEDIN"],
             "api_url": self.dsn,
-            "expiresOn": expires_on
+            "expiresOn": expires_on,
+            "name" : user_id,
+            "notify_url" : notify_url
         }
 
         response = requests.post(
