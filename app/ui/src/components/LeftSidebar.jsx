@@ -1,12 +1,12 @@
 import React from 'react';
-import { Zap, Sparkles, Layers, Calendar, User, Sun, Moon, Building2, LogOut } from 'lucide-react';
+import { Zap, Sparkles, Layers, Calendar, LayoutDashboard, Settings, Sun, Moon, Building2, LogOut } from 'lucide-react';
 
 export default function LeftSidebar({ activeTab, setActiveTab, theme, toggleTheme, clubInfo, onLogout }) {
   const navItems = [
     { id: 'creator', label: 'Campaign Creator', icon: Sparkles },
     { id: 'campaigns', label: 'Campaigns Library', icon: Layers },
     { id: 'schedule', label: 'Schedule Timeline', icon: Calendar },
-    { id: 'account', label: 'Club Settings & Auth', icon: User },
+    { id: 'dashboard', label: 'Overview Dashboard', icon: LayoutDashboard },
   ];
 
   return (
@@ -19,23 +19,24 @@ export default function LeftSidebar({ activeTab, setActiveTab, theme, toggleThem
             width: '36px',
             height: '36px',
             borderRadius: '12px',
-            background: 'linear-gradient(135deg, var(--accent-blue), var(--accent-purple))',
+            background: 'var(--pop-tab-yellow)',
+            border: '2px solid var(--border-pop)',
+            boxShadow: 'var(--shadow-pop-sm)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#ffffff',
-            boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)'
+            color: '#000000'
           }}>
             <Zap size={20} />
           </div>
           <div>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>CampusSync</h3>
-            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700 }}>AI ENGINE</span>
+            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 800, letterSpacing: '0.05em' }}>AI ENGINE</span>
           </div>
         </div>
 
         {/* Navigation Items */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -53,19 +54,41 @@ export default function LeftSidebar({ activeTab, setActiveTab, theme, toggleThem
         </div>
       </div>
 
-      {/* Bottom Section: Theme Toggle & Club Badge */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
+      {/* Bottom Section: Theme Toggle, Social Auth Settings & Club Badge */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', borderTop: '1.5px solid var(--border-subtle)', paddingTop: '16px' }}>
+        {/* Small Authorization Settings Button */}
+        <button
+          onClick={() => setActiveTab('settings')}
+          className={`left-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
+          style={{
+            padding: '9px 12px',
+            fontSize: '0.8rem',
+            background: activeTab === 'settings' ? 'var(--pop-tab-purple)' : 'var(--card-purple)',
+            color: activeTab === 'settings' ? '#000000' : 'var(--text-main)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Settings size={15} />
+            <span>Authorization</span>
+          </div>
+          <span className="pill-badge pill-badge-blue" style={{ fontSize: '0.58rem', padding: '1px 5px' }}>IG & LI</span>
+        </button>
+
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
           style={{
             background: 'var(--card-blue)',
-            border: '1px solid var(--card-blue-border)',
+            border: '2px solid var(--border-pop)',
+            boxShadow: 'var(--shadow-pop-sm)',
             color: 'var(--text-main)',
             borderRadius: '14px',
-            padding: '10px 14px',
-            fontSize: '0.8rem',
-            fontWeight: 700,
+            padding: '9px 12px',
+            fontSize: '0.78rem',
+            fontWeight: 800,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -73,32 +96,33 @@ export default function LeftSidebar({ activeTab, setActiveTab, theme, toggleThem
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {theme === 'light' ? <Sun size={16} color="#f59e0b" /> : <Moon size={16} color="#8b5cf6" />}
+            {theme === 'light' ? <Sun size={15} color="#f59e0b" /> : <Moon size={15} color="#8b5cf6" />}
             <span>{theme === 'light' ? 'Light Theme' : 'Dark Theme'}</span>
           </div>
-          <span style={{ fontSize: '0.7rem', color: 'var(--accent-blue)', textTransform: 'uppercase' }}>Switch</span>
+          <span style={{ fontSize: '0.65rem', color: 'var(--accent-blue)', textTransform: 'uppercase', fontWeight: 900 }}>Switch</span>
         </button>
 
         {/* Logged-in Club Badge & Logout */}
         {clubInfo && (
           <div style={{
-            background: 'var(--card-purple)',
+            background: 'var(--card-amber)',
             borderRadius: '14px',
-            padding: '10px 14px',
-            border: '1px solid var(--card-purple-border)',
+            padding: '8px 12px',
+            border: '2px solid var(--border-pop)',
+            boxShadow: 'var(--shadow-pop-sm)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Building2 size={16} color="var(--accent-purple)" />
-              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-main)', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <Building2 size={15} color="var(--text-main)" />
+              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-main)', maxWidth: '110px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {clubInfo.club_name || clubInfo.username}
               </div>
             </div>
 
             {onLogout && (
-              <button onClick={onLogout} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
+              <button onClick={onLogout} title="Log Out" style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                 <LogOut size={14} />
               </button>
             )}
@@ -108,3 +132,4 @@ export default function LeftSidebar({ activeTab, setActiveTab, theme, toggleThem
     </aside>
   );
 }
+

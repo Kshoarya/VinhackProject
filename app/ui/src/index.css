@@ -1,72 +1,92 @@
-/* Ultra-Premium Dashboard Theme System (Inspired by Reference Design) */
+/* Pop Style / Neo-Brutalism Theme System */
 :root {
-  /* LIGHT MODE DEFAULT (Soft Pearl & Lavender Dashboard) */
-  --bg-main: #f3f4f8;
+  /* LIGHT MODE (Warm Pastel Canvas + High Contrast Pop Colors) */
+  --bg-main: #fcf8f2;
   --bg-sidebar: #ffffff;
   --bg-card: #ffffff;
-  --text-main: #0f172a;
-  --text-sub: #334155;
-  --text-muted: #64748b;
-  --border-subtle: rgba(15, 23, 42, 0.08);
-  --border-active: #3b82f6;
+  --text-main: #09090b;
+  --text-sub: #27272a;
+  --text-muted: #52525b;
+  --border-pop: #000000;
+  --border-subtle: #000000;
+  --shadow-pop: 4px 4px 0px #000000;
+  --shadow-pop-hover: 6px 6px 0px #000000;
+  --shadow-pop-sm: 3px 3px 0px #000000;
 
   /* Input Fields (Light Mode) */
   --input-bg: #ffffff;
-  --input-text: #0f172a;
-  --input-placeholder: #94a3b8;
-  --input-border: #cbd5e1;
+  --input-text: #000000;
+  --input-placeholder: #71717a;
+  --input-border: #000000;
 
-  /* Colorful Curved Card Accents (Light Mode) */
+  /* Retro Folder Tab Colors (Light) */
+  --pop-tab-yellow: #fde047;
+  --pop-tab-green: #4ade80;
+  --pop-tab-pink: #f472b6;
+  --pop-tab-purple: #c084fc;
+  --pop-tab-blue: #60a5fa;
+  --pop-tab-orange: #fb923c;
+
+  /* Colorful Card Accents (Light Mode) */
   --card-white: #ffffff;
-  --card-blue: #eff6ff;
-  --card-blue-border: #bfdbfe;
-  --card-purple: #faf5ff;
-  --card-purple-border: #e9d5ff;
-  --card-emerald: #ecfdf5;
-  --card-emerald-border: #a7f3d0;
-  --card-coral: #fff1f2;
-  --card-coral-border: #fecdd3;
-  --card-amber: #fffbeb;
-  --card-amber-border: #fde68a;
+  --card-blue: #e0f2fe;
+  --card-blue-border: #000000;
+  --card-purple: #f3e8ff;
+  --card-purple-border: #000000;
+  --card-emerald: #dcfce7;
+  --card-emerald-border: #000000;
+  --card-coral: #ffe4e6;
+  --card-coral-border: #000000;
+  --card-amber: #fef9c3;
+  --card-amber-border: #000000;
 
   --accent-blue: #2563eb;
   --accent-purple: #7c3aed;
-  --shadow-card: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
 }
 
 [data-theme="dark"] {
-  /* DARK MODE */
-  --bg-main: #070a12;
-  --bg-sidebar: #0f172a;
-  --bg-card: #111827;
+  /* DARK MODE (Refined Dark Pop / Cyberpunk Brutalism) */
+  --bg-main: #0b0d14;
+  --bg-sidebar: #121520;
+  --bg-card: #181b28;
   --text-main: #f8fafc;
   --text-sub: #cbd5e1;
-  --text-muted: #64748b;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-active: #60a5fa;
+  --text-muted: #94a3b8;
+  --border-pop: #2d3348;
+  --border-subtle: #2d3348;
+  --shadow-pop: 4px 4px 0px #06070a;
+  --shadow-pop-hover: 6px 6px 0px #06070a;
+  --shadow-pop-sm: 3px 3px 0px #06070a;
 
   /* Input Fields (Dark Mode) */
-  --input-bg: #1e293b;
+  --input-bg: #1e2233;
   --input-text: #f8fafc;
   --input-placeholder: #64748b;
-  --input-border: rgba(255, 255, 255, 0.15);
+  --input-border: #3b425e;
 
-  /* Colorful Curved Card Accents (Dark Mode) */
-  --card-white: #111827;
+  /* Retro Folder Tab Colors (Dark Mode - Vibrant Pop Pills) */
+  --pop-tab-yellow: #facc15;
+  --pop-tab-green: #34d399;
+  --pop-tab-pink: #c084fc;
+  --pop-tab-purple: #c084fc;
+  --pop-tab-blue: #38bdf8;
+  --pop-tab-orange: #fb923c;
+
+  /* Colorful Card Accents (Dark Mode - Deep Saturated Tones, No Red) */
+  --card-white: #161926;
   --card-blue: #1e293b;
-  --card-blue-border: rgba(59, 130, 246, 0.3);
+  --card-blue-border: #3b82f6;
   --card-purple: #2e1065;
-  --card-purple-border: rgba(139, 92, 246, 0.3);
+  --card-purple-border: #8b5cf6;
   --card-emerald: #064e3b;
-  --card-emerald-border: rgba(16, 185, 129, 0.3);
-  --card-coral: #4c0519;
-  --card-coral-border: rgba(244, 63, 94, 0.3);
+  --card-emerald-border: #10b981;
+  --card-coral: #1e1b4b;
+  --card-coral-border: #6366f1;
   --card-amber: #451a03;
-  --card-amber-border: rgba(245, 158, 11, 0.3);
+  --card-amber-border: #f59e0b;
 
-  --accent-blue: #3b82f6;
-  --accent-purple: #8b5cf6;
-  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+  --accent-blue: #38bdf8;
+  --accent-purple: #c084fc;
 }
 
 * {
@@ -82,141 +102,201 @@ html, body {
   background-color: var(--bg-main);
   color: var(--text-main);
   font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Outfit', -apple-system, sans-serif;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.03em;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.4);
+  background: var(--border-pop);
   border-radius: 4px;
 }
 
-/* Curved Colorful Cards */
+/* Pop Style Retro Folder Cards with Chunky Borders & Hard Offset Shadows */
 .curved-card {
   background: var(--bg-card);
-  border-radius: 20px;
-  box-shadow: var(--shadow-card);
-  border: 1px solid var(--border-subtle);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 16px;
+  border: 2.5px solid var(--border-pop);
+  box-shadow: var(--shadow-pop);
+  transition: all 0.18s ease;
+  position: relative;
+}
+
+.curved-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-pop-hover);
 }
 
 .curved-card-blue {
   background: var(--card-blue);
-  border: 1.5px solid var(--card-blue-border);
+  border: 2.5px solid var(--border-pop);
 }
 
 .curved-card-purple {
   background: var(--card-purple);
-  border: 1.5px solid var(--card-purple-border);
+  border: 2.5px solid var(--border-pop);
 }
 
 .curved-card-emerald {
   background: var(--card-emerald);
-  border: 1.5px solid var(--card-emerald-border);
+  border: 2.5px solid var(--border-pop);
 }
 
 .curved-card-coral {
   background: var(--card-coral);
-  border: 1.5px solid var(--card-coral-border);
+  border: 2.5px solid var(--border-pop);
 }
 
 .curved-card-amber {
   background: var(--card-amber);
-  border: 1.5px solid var(--card-amber-border);
+  border: 2.5px solid var(--border-pop);
 }
 
 .curved-card-white {
   background: var(--card-white);
-  border: 1px solid var(--border-subtle);
+  border: 2.5px solid var(--border-pop);
 }
 
-/* Form Input Fields High Contrast Styling */
+/* Retro Folder Top Tab Container Styling (Pop Folder Cards) */
+.pop-folder-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 2.5px solid var(--border-pop);
+  box-shadow: var(--shadow-pop);
+  position: relative;
+  transition: all 0.18s ease;
+  margin-top: 14px;
+}
+
+.pop-folder-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-pop-hover);
+}
+
+/* Folder Top Tab */
+.pop-folder-tab {
+  position: absolute;
+  top: -14px;
+  left: 18px;
+  height: 18px;
+  padding: 0 14px;
+  border-radius: 8px 8px 0 0;
+  border: 2.5px solid var(--border-pop);
+  border-bottom: none;
+  font-size: 0.65rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+
+.pop-tab-yellow { background: var(--pop-tab-yellow); color: #000000; }
+.pop-tab-green { background: var(--pop-tab-green); color: #000000; }
+.pop-tab-pink { background: var(--pop-tab-pink); color: #000000; }
+.pop-tab-purple { background: var(--pop-tab-purple); color: #000000; }
+.pop-tab-blue { background: var(--pop-tab-blue); color: #000000; }
+.pop-tab-orange { background: var(--pop-tab-orange); color: #000000; }
+
+/* Form Input Fields Chunky Neo-Brutalist Styling */
 .custom-input {
   width: 100%;
   background-color: var(--input-bg) !important;
   color: var(--input-text) !important;
-  border: 1.5px solid var(--input-border) !important;
+  border: 2.5px solid var(--input-border) !important;
   border-radius: 12px;
   padding: 12px 14px;
   font-size: 0.95rem;
+  font-weight: 700;
   font-family: 'Plus Jakarta Sans', sans-serif;
   outline: none;
-  transition: all 0.2s ease;
+  box-shadow: var(--shadow-pop-sm) !important;
+  transition: all 0.15s ease;
 }
 
 .custom-input::placeholder {
   color: var(--input-placeholder) !important;
-  opacity: 0.8;
+  font-weight: 600;
 }
 
 .custom-input:focus {
+  transform: translate(-1px, -1px);
   border-color: var(--accent-blue) !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+  box-shadow: 4px 4px 0px var(--accent-blue) !important;
 }
 
-/* Buttons */
+/* Chunky Pop Style Buttons */
 .btn-primary-pill {
-  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
-  color: #ffffff;
-  font-weight: 700;
-  border-radius: 20px;
+  background: var(--pop-tab-yellow);
+  color: #000000;
+  font-weight: 900;
+  border-radius: 14px;
   padding: 11px 24px;
-  border: none;
+  border: 2.5px solid var(--border-pop);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
-  transition: all 0.2s ease;
+  box-shadow: var(--shadow-pop);
+  transition: all 0.15s ease;
 }
 
 .btn-primary-pill:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-pop-hover);
+  background: #facc15;
+}
+
+.btn-primary-pill:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px var(--border-pop);
 }
 
 .btn-primary-pill:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .btn-secondary-pill {
   background: var(--card-white);
   color: var(--text-main);
-  font-weight: 700;
-  border-radius: 20px;
+  font-weight: 900;
+  border-radius: 14px;
   padding: 10px 20px;
-  border: 1px solid var(--border-subtle);
+  border: 2.5px solid var(--border-pop);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: var(--shadow-card);
-  transition: all 0.2s ease;
+  box-shadow: var(--shadow-pop-sm);
+  transition: all 0.15s ease;
 }
 
 .btn-secondary-pill:hover {
-  background: var(--card-blue);
-  border-color: var(--accent-blue);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-pop-hover);
+  background: var(--pop-tab-green);
+  color: #000000;
 }
 
-/* Left Navigation Sidebar Dock (Reference Style) */
+/* Left Navigation Sidebar Dock (Pop Style) */
 .left-nav-sidebar {
-  width: 220px;
+  width: 230px;
   background: var(--bg-sidebar);
-  border-right: 1px solid var(--border-subtle);
+  border-right: 2.5px solid var(--border-pop);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -228,139 +308,124 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border-radius: 16px;
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: var(--text-sub);
-  background: transparent;
-  border: 1px solid transparent;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--text-main);
+  background: var(--card-white);
+  border: 2px solid var(--border-pop);
+  box-shadow: var(--shadow-pop-sm);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   width: 100%;
   text-align: left;
 }
 
 .left-nav-item:hover {
-  background: var(--card-blue);
-  color: var(--accent-blue);
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px var(--border-pop);
+  background: var(--pop-tab-purple);
+  color: #000000;
 }
 
 .left-nav-item.active {
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-  color: #ffffff;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+  background: var(--pop-tab-yellow);
+  color: #000000;
+  box-shadow: var(--shadow-pop);
+  border: 2.5px solid var(--border-pop);
 }
 
-/* Dropzone styling */
+/* Chunky Dropzone styling */
 .upload-dropzone {
-  border: 2px dashed var(--accent-blue);
+  border: 2.5px dashed var(--border-pop);
   border-radius: 16px;
   padding: 24px;
   text-align: center;
   background: var(--card-blue);
+  color: var(--text-main);
+  box-shadow: var(--shadow-pop-sm);
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
 }
 
 .upload-dropzone:hover {
-  background: #dbeafe;
-  box-shadow: 0 0 20px rgba(37, 99, 235, 0.15);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-pop-hover);
+  background: var(--pop-tab-yellow);
+  color: #000000;
 }
 
-[data-theme="dark"] .upload-dropzone:hover {
-  background: #1e293b;
-}
-
-/* Badges & Pills */
+/* Chunky Pop Badges & Pills */
 .pill-badge {
   padding: 4px 12px;
-  border-radius: 14px;
-  font-size: 0.7rem;
-  font-weight: 800;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  border: 2px solid var(--border-pop);
+  box-shadow: 2px 2px 0px var(--border-pop);
 }
 
 .pill-badge-blue {
-  background: rgba(37, 99, 235, 0.12);
-  color: #2563eb;
-  border: 1px solid rgba(37, 99, 235, 0.25);
+  background: var(--pop-tab-blue);
+  color: #000000;
 }
 
 .pill-badge-emerald {
-  background: rgba(16, 185, 129, 0.12);
-  color: #059669;
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: var(--pop-tab-green);
+  color: #000000;
 }
 
 .pill-badge-coral {
-  background: rgba(244, 63, 94, 0.12);
-  color: #e11d48;
-  border: 1px solid rgba(244, 63, 94, 0.25);
+  background: var(--pop-tab-pink);
+  color: #000000;
 }
 
 .pill-badge-amber {
-  background: rgba(245, 158, 11, 0.12);
-  color: #d97706;
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  background: var(--pop-tab-yellow);
+  color: #000000;
 }
 
 .pill-badge-purple {
-  background: rgba(124, 58, 237, 0.12);
-  color: #7c3aed;
-  border: 1px solid rgba(124, 58, 237, 0.25);
+  background: var(--pop-tab-purple);
+  color: #000000;
 }
 
-/* Platform Badges (Image 4 Style) */
+/* Platform Badges (Chunky Pop Style) */
 .platform-badge {
   padding: 4px 10px;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 800;
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  border: 1.5px solid var(--border-pop);
+  box-shadow: 1.5px 1.5px 0px var(--border-pop);
 }
 
 .platform-badge-ig {
-  background: #fce7f3;
-  color: #db2777;
-}
-
-[data-theme="dark"] .platform-badge-ig {
-  background: #831843;
-  color: #fbcfe8;
+  background: #f472b6;
+  color: #000000;
 }
 
 .platform-badge-li {
-  background: #e0f2fe;
-  color: #0284c7;
-}
-
-[data-theme="dark"] .platform-badge-li {
-  background: #075985;
-  color: #bae6fd;
+  background: #60a5fa;
+  color: #000000;
 }
 
 .platform-badge-x {
-  background: #f1f5f9;
-  color: #334155;
-}
-
-[data-theme="dark"] .platform-badge-x {
-  background: #334155;
-  color: #f8fafc;
+  background: #e4e4e7;
+  color: #000000;
 }
 
 .platform-badge-fb {
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: #818cf8;
+  color: #000000;
 }
 
-[data-theme="dark"] .platform-badge-fb {
-  background: #1e3a8a;
-  color: #bfdbfe;
-}
+

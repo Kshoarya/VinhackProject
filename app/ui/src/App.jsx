@@ -293,8 +293,15 @@ export default function App() {
           <ScheduleTimeline postStatuses={postStatuses} />
         )}
 
-        {/* Tab 4: Account & Social Credentials Page */}
-        {activeTab === 'account' && (
+        {/* Tab 4: Overview Dashboard Page */}
+        {activeTab === 'dashboard' && (
+          <div style={{ maxWidth: '1150px', margin: '0 auto', width: '100%', height: '100%' }}>
+            <PerformanceTracker postStatuses={postStatuses} onTriggerCheck={handleTriggerCheck} />
+          </div>
+        )}
+
+        {/* Tab 5: Social API Auth Settings Page */}
+        {(activeTab === 'settings' || activeTab === 'account') && (
           <div style={{ margin: 'auto 0', width: '100%' }}>
             {!clubInfo ? (
               <Login initialMode="login" onLoginSuccess={handleLoginSuccess} onBackToIntro={() => setActiveTab('creator')} />
@@ -307,3 +314,4 @@ export default function App() {
     </div>
   );
 }
+
