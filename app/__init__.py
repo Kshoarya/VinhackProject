@@ -1,0 +1,3 @@
+"""
+CampusSync Hackathon Application Package
+"""
