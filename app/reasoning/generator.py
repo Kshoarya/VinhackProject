@@ -8,7 +8,7 @@ Folder Ownership: app/reasoning/
 import os
 import json
 import requests
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List
 from app.schemas import IngestedPosterData, GeneratedCampaign
 
 def generate_campaign(poster_data: IngestedPosterData, club_memory: Dict[str, Any]) -> GeneratedCampaign:
