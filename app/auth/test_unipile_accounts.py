@@ -1,24 +1,25 @@
-import os
-import requests
-from dotenv import load_dotenv
+from app.auth.unipile import UnipileAuth
 
-load_dotenv()
 
-dsn = os.getenv("UNIPILE_DSN")
-api_key = os.getenv("UNIPILE_API_KEY")
+def main():
 
-if not dsn.startswith("http"):
-    dsn = "https://" + dsn
+    auth = UnipileAuth()
 
-response = requests.get(
-    f"{dsn}/api/v1/accounts",
-    headers={
-        "X-API-KEY": api_key,
-        "accept": "application/json"
-    },
-    timeout=30
-)
+    user_id = "test_user_001"
 
-print("Status:", response.status_code)
-print("Response:")
-print(response.text)
+    notify_url = "https://YOUR_PUBLIC_URL/api/unipile/callback"
+
+    url = auth.create_linkedin_auth_link(
+        user_id=user_id,
+        notify_url=notify_url
+    )
+
+    print("\n==============================")
+    print("HOSTED AUTH URL")
+    print("==============================")
+    print(url)
+    print("==============================")
+
+
+if __name__ == "__main__":
+    main()
