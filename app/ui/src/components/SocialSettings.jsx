@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Instagram, Linkedin, ShieldCheck, Sparkles, Save, ArrowRight, Key, AtSign } from 'lucide-react';
+import { Instagram, Linkedin, ShieldCheck, Sparkles, Save, ArrowRight, Key, AtSign, Eye, EyeOff } from 'lucide-react';
 
 export default function SocialSettings({ clubInfo, onSaveCredentials }) {
   const [instagramUser, setInstagramUser] = useState('');
   const [instagramToken, setInstagramToken] = useState('');
+  const [showInstagramToken, setShowInstagramToken] = useState(false);
 
   const [linkedinUser, setLinkedinUser] = useState('');
   const [linkedinToken, setLinkedinToken] = useState('');
+  const [showLinkedinToken, setShowLinkedinToken] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -131,13 +133,30 @@ export default function SocialSettings({ clubInfo, onSaveCredentials }) {
                 <div style={{ position: 'relative' }}>
                   <Key size={18} color="var(--accent-purple)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', zIndex: 5 }} />
                   <input
-                    type="password"
+                    type={showInstagramToken ? "text" : "password"}
                     className="custom-input"
                     value={instagramToken}
                     onChange={(e) => setInstagramToken(e.target.value)}
                     placeholder="••••••••••••••••••••"
-                    style={{ paddingLeft: '44px', fontSize: '0.95rem', height: '46px' }}
+                    style={{ paddingLeft: '44px', paddingRight: '44px', fontSize: '0.95rem', height: '46px' }}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowInstagramToken(!showInstagramToken)}
+                    style={{
+                      position: 'absolute',
+                      right: '14px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'var(--text-muted)',
+                      cursor: 'pointer',
+                      zIndex: 5
+                    }}
+                  >
+                    {showInstagramToken ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
               </div>
             </div>
@@ -180,13 +199,30 @@ export default function SocialSettings({ clubInfo, onSaveCredentials }) {
                 <div style={{ position: 'relative' }}>
                   <Key size={18} color="var(--accent-blue)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', zIndex: 5 }} />
                   <input
-                    type="password"
+                    type={showLinkedinToken ? "text" : "password"}
                     className="custom-input"
                     value={linkedinToken}
                     onChange={(e) => setLinkedinToken(e.target.value)}
                     placeholder="••••••••••••••••••••"
-                    style={{ paddingLeft: '44px', fontSize: '0.95rem', height: '46px' }}
+                    style={{ paddingLeft: '44px', paddingRight: '44px', fontSize: '0.95rem', height: '46px' }}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowLinkedinToken(!showLinkedinToken)}
+                    style={{
+                      position: 'absolute',
+                      right: '14px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'var(--text-muted)',
+                      cursor: 'pointer',
+                      zIndex: 5
+                    }}
+                  >
+                    {showLinkedinToken ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
               </div>
             </div>

@@ -44,7 +44,7 @@ export default function IntroLanding({ onGoToLogin, onGoToSignup }) {
         </div>
       </div>
 
-      {/* Feature Grid (4 Retro Folder Cards with Accent Tabs as shown in Reference Image 5) */}
+      {/* Feature Grid (4 Retro Folder Cards with Accent Tabs) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '18px' }}>
         {/* Folder 1: Blue Tab */}
         <div className="pop-folder-card" style={{ padding: '22px 18px 18px', display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -69,7 +69,7 @@ export default function IntroLanding({ onGoToLogin, onGoToSignup }) {
             Vision LLM & OpenCV
           </h4>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-sub)', fontWeight: 600, lineHeight: 1.5, flex: 1 }}>
-            Extracts event title, date, venue, & vibe while smart-cropping 1:1 Feed images automatically.
+            Extracts event title, date, venue, & vibe while auto-cropping 1:1 Feed & 9:16 Story images automatically.
           </p>
         </div>
 
@@ -96,7 +96,7 @@ export default function IntroLanding({ onGoToLogin, onGoToSignup }) {
             Dual Campaign Gen
           </h4>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-sub)', fontWeight: 600, lineHeight: 1.5, flex: 1 }}>
-            Crafts carousel scripts, emoji captions, and hashtags for Instagram + professional LinkedIn copy.
+            Generates custom Instagram captions & carousel scripts + live LinkedIn copy using Club Vault tone guidelines.
           </p>
         </div>
 
@@ -123,7 +123,7 @@ export default function IntroLanding({ onGoToLogin, onGoToSignup }) {
             Peak Hours Scheduler
           </h4>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-sub)', fontWeight: 600, lineHeight: 1.5, flex: 1 }}>
-            Schedule posts for immediate dispatch or peak student engagement hours automatically.
+            Dispatches live posts directly to LinkedIn via Unipile API or schedules for peak student engagement hours.
           </p>
         </div>
 
@@ -150,7 +150,7 @@ export default function IntroLanding({ onGoToLogin, onGoToSignup }) {
             Traction Oversight
           </h4>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-sub)', fontWeight: 600, lineHeight: 1.5, flex: 1 }}>
-            Monitors engagement metrics after publication and triggers dynamic AI auto-refresh if likes are low.
+            Monitors real-time reach & engagement metrics across platforms with automated AI traction oversight.
           </p>
         </div>
       </div>

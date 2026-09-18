@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Lock, User, Building2, Sparkles, LogIn, UserPlus, KeyRound, ArrowLeft } from 'lucide-react';
+import { Lock, User, Building2, Sparkles, LogIn, UserPlus, KeyRound, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 
 export default function Login({ initialMode = 'login', onLoginSuccess, onBackToIntro }) {
   const [authMode] = useState(initialMode);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [clubName, setClubName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -160,7 +161,7 @@ export default function Login({ initialMode = 'login', onLoginSuccess, onBackToI
             <div style={{ position: 'relative' }}>
               <Lock size={16} color="#d97706" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
@@ -170,11 +171,27 @@ export default function Login({ initialMode = 'login', onLoginSuccess, onBackToI
                   color: 'var(--text-main)',
                   border: '1px solid var(--border-subtle)',
                   borderRadius: '12px',
-                  padding: '9px 12px 9px 38px',
+                  padding: '9px 38px 9px 38px',
                   fontSize: '0.85rem',
                   outline: 'none'
                 }}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer'
+                }}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
           </div>
 
