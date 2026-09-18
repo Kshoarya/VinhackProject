@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 from app.dispatch.base import SocialPublisher
 
 
+# Load environment variables from root or local .env
+load_dotenv()
+load_dotenv(Path(__file__).parent.parent.parent / ".env")
 load_dotenv(Path(__file__).parent / ".env")
 
 
