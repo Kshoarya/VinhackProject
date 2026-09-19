@@ -108,6 +108,65 @@ def get_social_credentials(club_id: str) -> Dict[str, Any]:
 
     return {"club_id": club_id, "instagram_token": "", "linkedin_token": ""}
 
+def save_unipile_account_id(club_id: str, account_id: str) -> Dict[str, Any]:
+    """Stores the Unipile account ID for a club."""
+    if supabase:
+        try:
+            # Check whether social credentials already exist for this club
+            existing_res = (
+                supabase
+                .table("social_credentials")
+                .select("*")
+                .eq("club_id", club_id)
+                .execute()
+            )
+
+            if existing_res.data:
+                # Update existing row
+                res = (
+                    supabase
+                    .table("social_credentials")
+                    .update({
+                        "unipile_account_id": account_id
+                    })
+                    .eq("club_id", club_id)
+                    .execute()
+                )
+            else:
+                # Create a new row
+                res = (
+                    supabase
+                    .table("social_credentials")
+                    .insert({
+                        "club_id": club_id,
+                        "instagram_token": "",
+                        "linkedin_token": "",
+                        "unipile_account_id": account_id
+                    })
+                    .execute()
+                )
+
+            if res.data:
+                _SOCIAL_CREDENTIALS_CACHE[club_id] = res.data[0]
+                return res.data[0]
+
+        except Exception as e:
+            logging.error(f"Error saving Unipile account ID: {e}")
+
+    # Fallback/cache mode
+    existing = _SOCIAL_CREDENTIALS_CACHE.get(
+        club_id,
+        {
+            "club_id": club_id,
+            "instagram_token": "",
+            "linkedin_token": ""
+        }
+    )
+
+    existing["unipile_account_id"] = account_id
+    _SOCIAL_CREDENTIALS_CACHE[club_id] = existing
+
+    return existing
 
 def process_media_path_for_storage(path_or_url: str, base_url: str = "http://localhost:8000") -> str:
     """
