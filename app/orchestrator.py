@@ -85,7 +85,8 @@ async def get_unipile_connect_url(
         
         success_redirect = f"{redirect_url.rstrip('/')}?auth_status=success&club_id={club_id}"
         failure_redirect = f"{redirect_url.rstrip('/')}?auth_status=failed&club_id={club_id}"
-        notify_webhook = "http://localhost:8000/api/unipile/callback"
+        public_server_url = os.getenv("PUBLIC_SERVER_URL") or os.getenv("NGROK_URL") or "http://localhost:8000"
+        notify_webhook = f"{public_server_url.rstrip('/')}/api/unipile/callback"
 
         url = auth.create_hosted_auth_link(
             user_id=club_id,
@@ -96,7 +97,7 @@ async def get_unipile_connect_url(
             enable_unilogin=True,
             expires_in_minutes=60
         )
-        return {"success": True, "url": url}
+        return {"success": True, "url": url, "notify_url": notify_webhook}
     except Exception as e:
         print(f"[Unipile Auth Link Error] {e}")
         return {"success": False, "error": str(e), "url": None}
