@@ -25,6 +25,7 @@ from app.db import (
     authenticate_club,
     save_social_credentials,
     get_social_credentials,
+    save_unipile_account_id,
     save_ingested_poster,
     save_generated_campaign,
     save_post_status
@@ -111,16 +112,15 @@ async def unipile_auth_callback(payload: dict):
         club_id = payload.get("name") or "club_default"
 
         if status in ("CREATION_SUCCESS", "RECONNECTED") and account_id:
-            from app.db import save_social_credentials
-            from app.schemas import SocialCredentials
-            
-            creds = SocialCredentials(
+            save_unipile_account_id(
                 club_id=club_id,
-                linkedin_access_token=account_id,
-                linkedin_account_id=account_id
+                account_id=account_id
             )
-            save_social_credentials(creds)
-            print(f"[Unipile Callback Success] Linked Account ID '{account_id}' to Club '{club_id}'")
+
+            print(
+                    f"[Unipile Callback Success] "
+                    f"Linked Account ID '{account_id}' to Club '{club_id}'"
+            )
 
         return {"status": "ok", "received": payload}
     except Exception as e:
