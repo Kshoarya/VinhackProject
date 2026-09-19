@@ -99,4 +99,26 @@ class UnipileAuth:
             failure_redirect_url=failure_redirect_url,
             providers=["LINKEDIN"],
             enable_unilogin=True
-        )
+        )
+
+    def list_accounts(self) -> List[dict]:
+        """Fetches all active accounts connected to Unipile."""
+        try:
+            res = requests.get(
+                f"{self.dsn}/api/v1/accounts",
+                headers={
+                    "X-API-KEY": self.api_key,
+                    "accept": "application/json"
+                },
+                timeout=15
+            )
+            if res.status_code == 200:
+                data = res.json()
+                if isinstance(data, list):
+                    return data
+                return data.get("items", data.get("accounts", []))
+            print(f"[Unipile List Accounts Error] Status: {res.status_code} - {res.text}")
+            return []
+        except Exception as e:
+            print(f"[Unipile List Accounts Exception] {e}")
+            return []

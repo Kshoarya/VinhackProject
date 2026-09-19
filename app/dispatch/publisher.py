@@ -69,7 +69,7 @@ def publish_campaign(campaign: GeneratedCampaign, club_id: str = "club_default")
         from app.db import get_social_credentials
         
         creds = get_social_credentials(club_id)
-        dynamic_account = creds.get("linkedin_token") or creds.get("linkedin_account_id") or None
+        dynamic_account = creds.get("unipile_account_id") or creds.get("linkedin_token") or creds.get("linkedin_account_id") or None
         if dynamic_account and ":::" in dynamic_account:
             dynamic_account = dynamic_account.split(":::")[-1]
 
@@ -78,8 +78,12 @@ def publish_campaign(campaign: GeneratedCampaign, club_id: str = "club_default")
         img_path = None
         if campaign.media_paths:
             for p in campaign.media_paths:
-                if Path(p).exists():
-                    img_path = p
+                local_p = p
+                if "uploads/" in p:
+                    local_p = "uploads/" + p.split("uploads/")[-1]
+
+                if Path(local_p).exists():
+                    img_path = local_p
                     break
         if not img_path:
             for fp in ["uploads/poster.png", "app/dispatch/images.jpeg"]:

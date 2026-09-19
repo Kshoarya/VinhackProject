@@ -30,16 +30,16 @@ class LinkedInPublisher(SocialPublisher):
         if not self.dsn.startswith(("http://", "https://")):
             self.dsn = f"https://{self.dsn}"
 
-        self.account_id = account_id or os.getenv("UNIPILE_ACCOUNT_ID")
+        self.account_id = account_id
         
-        # If no account_id or if specified ID is missing, auto-fetch active connected LinkedIn account from Unipile
-        if not self.account_id:
+        # If no account_id or if specified ID is invalid/test ID, auto-fetch active connected LinkedIn account from Unipile
+        if not self.account_id or self.account_id in ("test_acc_123", "EMPTY", "mock-account-id"):
             active_id = self._fetch_active_linkedin_account_id()
             if active_id:
                 self.account_id = active_id
 
-        if not self.account_id:
-            raise ValueError("No active LinkedIn account found on Unipile. Please connect an account first.")
+        if not self.account_id or self.account_id in ("test_acc_123", "EMPTY"):
+            raise ValueError("No active LinkedIn account found on Unipile. Please click 'Connect LinkedIn' in Social Settings to link your account.")
 
     def _fetch_active_linkedin_account_id(self):
         """Queries Unipile API for any active connected LinkedIn account ID."""

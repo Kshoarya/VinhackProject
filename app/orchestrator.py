@@ -85,6 +85,8 @@ async def get_unipile_connect_url(
         
         success_redirect = f"{redirect_url.rstrip('/')}?auth_status=success&club_id={club_id}"
         failure_redirect = f"{redirect_url.rstrip('/')}?auth_status=failed&club_id={club_id}"
+        from dotenv import load_dotenv
+        load_dotenv(override=True)
         public_server_url = os.getenv("PUBLIC_SERVER_URL") or os.getenv("NGROK_URL") or "http://localhost:8000"
         notify_webhook = f"{public_server_url.rstrip('/')}/api/unipile/callback"
 
@@ -112,21 +114,41 @@ async def unipile_auth_callback(payload: dict):
         account_id = payload.get("account_id")
         club_id = payload.get("name") or "club_default"
 
-        if status in ("CREATION_SUCCESS", "RECONNECTED") and account_id:
+        if status in ("CREATION_SUCCESS", "RECONNECTED", "SUCCESS") and account_id:
             save_unipile_account_id(
                 club_id=club_id,
                 account_id=account_id
             )
 
             print(
-                    f"[Unipile Callback Success] "
-                    f"Linked Account ID '{account_id}' to Club '{club_id}'"
+                f"[Unipile Callback Success] "
+                f"Linked Account ID '{account_id}' to Club '{club_id}'"
             )
 
         return {"status": "ok", "received": payload}
     except Exception as e:
         print(f"[Unipile Callback Error] {e}")
         return {"status": "error", "message": str(e)}
+
+
+@app.get("/api/unipile/sync-account")
+async def sync_unipile_account_endpoint(club_id: str = "club_default"):
+    """Fetches real active connected accounts directly from Unipile API and updates Supabase."""
+    from app.db import sync_live_unipile_account
+    acc_id = sync_live_unipile_account(club_id=club_id)
+    return {"success": True, "club_id": club_id, "unipile_account_id": acc_id}
+
+
+@app.post("/api/unipile/save-account")
+async def save_unipile_account_endpoint(payload: dict):
+    """Saves account_id received directly from redirect URL parameters into Supabase."""
+    club_id = payload.get("club_id", "club_default")
+    account_id = payload.get("account_id")
+    if account_id:
+        from app.db import save_unipile_account_id
+        save_unipile_account_id(club_id=club_id, account_id=account_id)
+        return {"success": True, "account_id": account_id}
+    return {"success": False, "error": "Missing account_id"}
 
 
 

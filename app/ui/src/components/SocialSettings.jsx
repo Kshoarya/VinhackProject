@@ -19,16 +19,28 @@ export default function SocialSettings({ clubInfo, onSaveCredentials }) {
     // Check URL params for Unipile redirect callback status
     const params = new URLSearchParams(window.location.search);
     const authStatus = params.get('auth_status');
+    const redirectAccountId = params.get('account_id') || params.get('account');
+    const clubId = clubInfo?.id || 'club_default';
+
     if (authStatus === 'success') {
       setAuthBanner({ type: 'success', text: 'LinkedIn account connected successfully via Unipile Hosted Auth!' });
+      if (redirectAccountId) {
+        fetch('/api/unipile/save-account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ club_id: clubId, account_id: redirectAccountId })
+        }).catch(err => console.error("Error saving redirected account ID:", err));
+      }
     } else if (authStatus === 'failed') {
       setAuthBanner({ type: 'error', text: 'LinkedIn account authentication failed or was cancelled.' });
     }
 
     const fetchCreds = async () => {
-      if (!clubInfo?.id) return;
       try {
-        const res = await fetch(`/api/social-credentials/${clubInfo.id}`);
+        // Sync live accounts directly from Unipile API first
+        await fetch(`/api/unipile/sync-account?club_id=${encodeURIComponent(clubId)}`);
+
+        const res = await fetch(`/api/social-credentials/${clubId}`);
         if (res.ok) {
           const data = await res.json();
           if (data.instagram_token) {
@@ -36,7 +48,10 @@ export default function SocialSettings({ clubInfo, onSaveCredentials }) {
             setInstagramUser(parts[0] || '');
             setInstagramToken(parts[1] || parts[0] || '');
           }
-          if (data.linkedin_token) {
+          if (data.unipile_account_id) {
+            setLinkedinUser(`Unipile Connected (${data.unipile_account_id})`);
+            setLinkedinToken(data.unipile_account_id);
+          } else if (data.linkedin_token) {
             const parts = data.linkedin_token.split(':::');
             setLinkedinUser(parts[0] || '');
             setLinkedinToken(parts[1] || parts[0] || '');

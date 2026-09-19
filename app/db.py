@@ -93,20 +93,39 @@ def save_social_credentials(creds: SocialCredentials) -> Dict[str, Any]:
 
 
 def get_social_credentials(club_id: str) -> Dict[str, Any]:
-    """Retrieves saved social credentials for a club."""
+    """Retrieves saved social credentials for a club. Auto-syncs live Unipile accounts if missing."""
+    creds = None
     if supabase:
         try:
             res = supabase.table("social_credentials").select("*").eq("club_id", club_id).execute()
             if res.data and len(res.data) > 0:
-                _SOCIAL_CREDENTIALS_CACHE[club_id] = res.data[0]
-                return res.data[0]
+                creds = res.data[0]
+                _SOCIAL_CREDENTIALS_CACHE[club_id] = creds
         except Exception as e:
             logging.error(f"Error fetching social credentials: {e}")
 
-    if club_id in _SOCIAL_CREDENTIALS_CACHE:
-        return _SOCIAL_CREDENTIALS_CACHE[club_id]
+    if not creds and club_id in _SOCIAL_CREDENTIALS_CACHE:
+        creds = _SOCIAL_CREDENTIALS_CACHE[club_id]
 
-    return {"club_id": club_id, "instagram_token": "", "linkedin_token": ""}
+    if not creds:
+        creds = {"club_id": club_id, "instagram_token": "", "linkedin_token": "", "unipile_account_id": ""}
+
+    # Auto-healing: If unipile_account_id is empty, attempt live Unipile API sync
+    if not creds.get("unipile_account_id"):
+        try:
+            from app.auth.unipile import UnipileAuth
+            auth = UnipileAuth()
+            accounts = auth.list_accounts()
+            for acc in accounts:
+                if acc.get("id"):
+                    new_acc_id = acc.get("id")
+                    print(f"[Auto-Sync Creds] Found live Unipile account ID '{new_acc_id}'. Saving to Supabase for club '{club_id}'.")
+                    creds = save_unipile_account_id(club_id, new_acc_id)
+                    break
+        except Exception as err:
+            print(f"[Auto-Sync Creds Warning] Could not auto-sync live Unipile accounts: {err}")
+
+    return creds
 
 def save_unipile_account_id(club_id: str, account_id: str) -> Dict[str, Any]:
     """Stores the Unipile account ID for a club."""
@@ -162,6 +181,42 @@ def save_unipile_account_id(club_id: str, account_id: str) -> Dict[str, Any]:
             "linkedin_token": ""
         }
     )
+    existing["unipile_account_id"] = account_id
+    _SOCIAL_CREDENTIALS_CACHE[club_id] = existing
+    return existing
+
+
+def sync_live_unipile_account(club_id: str = "club_default") -> Optional[str]:
+    """
+    Queries Unipile's live API GET /api/v1/accounts.
+    Updates Supabase with the latest active connected account ID.
+    Clears mock test IDs (like test_acc_123) if no real accounts exist in Unipile.
+    """
+    try:
+        from app.auth.unipile import UnipileAuth
+        auth = UnipileAuth()
+        accounts = auth.list_accounts()
+        print(f"[Sync Live Unipile Accounts] Found {len(accounts)} accounts in Unipile API")
+        
+        valid_account_id = None
+        for acc in accounts:
+            acc_id = acc.get("id")
+            if acc_id:
+                valid_account_id = acc_id
+                break
+        
+        if valid_account_id:
+            print(f"[Sync Live Unipile Accounts] Updating club '{club_id}' with real Unipile account ID '{valid_account_id}'")
+            save_unipile_account_id(club_id, valid_account_id)
+            return valid_account_id
+        else:
+            print(f"[Sync Live Unipile Accounts] No connected accounts in Unipile. Clearing stale IDs for club '{club_id}'.")
+            # If current DB has a test/invalid ID, clear it
+            save_unipile_account_id(club_id, "")
+            return None
+    except Exception as e:
+        print(f"[Sync Live Unipile Accounts Error] {e}")
+        return None
 
     existing["unipile_account_id"] = account_id
     _SOCIAL_CREDENTIALS_CACHE[club_id] = existing
